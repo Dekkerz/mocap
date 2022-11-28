@@ -1,4 +1,4 @@
-python-ml-structure
+mocap structure
 ==============================
 
 a template for python ml dev
