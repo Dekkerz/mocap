@@ -5,5 +5,8 @@
 *.csv
 *.zip
 *.tar
+*.gz
 **/__pycache__/
 .env
+*.xlsx
+*.mat
