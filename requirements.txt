@@ -1,14 +1,18 @@
 # packaging
-
+pip>=22.2.1
 
 # data science
 numpy
 pandas
 scikit-learn
+jupyter
+matplotlib
+tensorflow
+keras
 
 # tests/linter
 pytest
-
+pylint
 
 # API
 gcsfs

@@ -2,7 +2,8 @@
 .coverage
 .ipynb_checkpoints
 .DS_Store
-raw_data/
 *.csv
+*.zip
+*.tar
 **/__pycache__/
 .env
