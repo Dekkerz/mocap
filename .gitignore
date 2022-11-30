@@ -1,4 +1,5 @@
 *.egg-info
+*.rar
 .coverage
 .ipynb_checkpoints
 .DS_Store
@@ -10,3 +11,4 @@
 .env
 *.xlsx
 *.mat
+*.pdf
