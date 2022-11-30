@@ -1,12 +1,14 @@
 *.egg-info
 *.rar
-*.xlsx
-*.pdf
 .coverage
 .ipynb_checkpoints
 .DS_Store
 *.csv
 *.zip
 *.tar
+*.gz
 **/__pycache__/
 .env
+*.xlsx
+*.mat
+*.pdf
