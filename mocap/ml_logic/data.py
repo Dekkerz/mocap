@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import re
 
 #file has no header
 
@@ -30,7 +31,7 @@ def nan_preprocess(df):
     return df
 
 
-def read_from_local_file(path=None, participant=None) -> pd.DataFrame:
+def read_from_local_file(path=None, endswith=None) -> pd.DataFrame:
     """ work-in-progress for loading data files at the moment if you call
     without specifying parameters then it will load Participant1_Data.xlsx
     """
@@ -38,19 +39,21 @@ def read_from_local_file(path=None, participant=None) -> pd.DataFrame:
     if path is None:
         data_dir=os.path.join('..','data','external','UT_Smoking_Data')
 
-    if participant is None:
+    if endswith is None:
         endswith='Participant1_Data.xlsx'
 
     #loop through files in the data_dir
     for file in os.listdir(data_dir):
         if file.endswith(endswith):
             filename=os.path.join(data_dir,file)
+            participant_num = re.findall(r'\d+',file)
             data=pd.read_excel(filename, header=None)
+            data['Participant_Num']=participant_num
 
     return(data)
 
 
-def rename_columns(df: pd.DataFrame) -> pd.DataFrame:
+def rename_columns(data: pd.DataFrame) -> pd.DataFrame:
     """ renaming the column names of our data set 0,1,2,3,4 to actual names
     as per the research paper
     """
@@ -88,6 +91,6 @@ def rename_columns(df: pd.DataFrame) -> pd.DataFrame:
                     ,30:'GPS_long_PD'
                     ,31:'Class_label'}
 
-    df.rename(columns=column_names,inplace=True)
+    data.rename(columns=column_names,inplace=True)
 
-    return df
+    return data
