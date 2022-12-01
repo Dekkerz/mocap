@@ -28,3 +28,24 @@ def nan_preprocess(df):
     df[99].fillna(df[98], inplace=True)
 
     return df
+
+
+def read_from_local_file(path=None, participant=None):
+""" dekkerz: work-in-progress for loading data files at the moment if you call
+without specifying parameters then it will load Participant1_Data.xlsx
+"""
+
+    if path is None:
+        data_dir=os.path.join('..','data','external','UT_Smoking_Data')
+
+    if participant is None:
+        endswith='Participant1_Data.xlsx'
+
+    #loop through files in the data_dir
+    for file in os.listdir(data_dir):
+        if file.endswith(endswith):
+            filename=os.path.join(data_dir,file)
+            data=pd.read_excel(filename, header=None)
+
+
+    return(data)

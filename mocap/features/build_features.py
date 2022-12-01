@@ -20,3 +20,8 @@ def rename_features(df):
     df = df.rename(d, axis=1)
 
     return df
+
+
+def select_basic_class(df):
+    df = df[df['Class_label'].isin(['SmokeSD', 'SmokeST', 'Sit', 'Stand'])]
+    return df
