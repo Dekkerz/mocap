@@ -1,4 +1,6 @@
-.*
+.env
+.envrc
+.DS_STORE
 !/.gitignore
 *.egg-info
 *.pyc
@@ -19,4 +21,3 @@ notebooks/*.ipynb
 .ipynb_checkpoints
 */.ipynb_checkpoints/*
 /notebooks/UT_Smoking_Data*
-
