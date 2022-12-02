@@ -1,43 +1,158 @@
 import os
 import pandas as pd
+import numpy as np
 import re
+from colorama import Fore, Style
+import mocap.utils.params as params
+from mocap.features.build_features import preprocess_main
+from mocap.data.local import get_pandas_chunk, save_local_chunk
 
-#file has no header
-
-#X_path = os.path.join('smoking_data','smoking_input.csv')
-#y_path = os.path.join('smoking_data','smoking_targets.csv')
-
-#import X and y csv as a Dataframes
-
-#X_data=pd.read_csv(X_path, header=None)
-#y_data=pd.read_csv(y_path, header=None)
-
-#rename the y Dataframe with 'Target' header
-
-#y_data.rename(columns={ y_data.columns[0]: "Target" }, inplace = True)
-
-#concatenate the two Dataframes, the X and the y
-
-#df = pd.concat([X_data, y_data], axis=1)
-
-#Replace the Nan with the value from the previous column
-
-def nan_preprocess(df):
-
-    df[299].fillna(df[298], inplace=True)
-    df[199].fillna(df[198], inplace=True)
-    df[99].fillna(df[98], inplace=True)
-
-    return df
-
-
-def read_from_local_file(path=None, endswith=None) -> pd.DataFrame:
-    """ work-in-progress for loading data files at the moment if you call
-    without specifying parameters then it will load Participant1_Data.xlsx
+def save_chunk(destination_name: str,
+               is_first: bool,
+               data: pd.DataFrame) -> None:
+    """
+    save chunk
     """
 
+    #if os.environ.get("DATA_SOURCE") == "big query":
+    #
+    #    save_bq_chunk(table=destination_name,
+    #                  data=data,
+    #                  is_first=is_first)
+    #
+    #    return
+
+    save_local_chunk(path=destination_name,
+                     data=data,
+                     is_first=is_first)
+
+def get_chunk(source_name: str,
+              index: int = 0,
+              chunk_size: int = None,
+              verbose=False) -> pd.DataFrame:
+
+    """
+    Return a `chunk_size` rows from the source dataset, starting at row `index` (included)
+    Always assumes `source_name` (CSV or Big Query table) have headers,
+    and do not consider them as part of the data `index` count.
+    """
+
+    if "processed" in source_name:
+        columns = None
+        #dtypes = DTYPES_PROCESSED_OPTIMIZED
+    else:
+        columns = params.COLUMN_NAMES_RAW
+        dtypes = params.DTYPES_RAW_OPTIMIZED_HEADLESS
+        #if os.environ.get("DATA_SOURCE") == "big query":
+        #    dtypes = DTYPES_RAW_OPTIMIZED
+        #else:
+
+    #if os.environ.get("DATA_SOURCE") == "big query":
+    #
+    #    chunk_df = get_bq_chunk(table=source_name,
+    #                            index=index,
+    #                            chunk_size=chunk_size,
+    #                            dtypes=dtypes,
+    #                            verbose=verbose)
+    #
+    #    return chunk_df
+
+    chunk_df = get_pandas_chunk(path=source_name,
+                                index=index,
+                                chunk_size=chunk_size,
+                                dtypes=dtypes,
+                                columns=columns,
+                                verbose=verbose)
+
+    return chunk_df
+
+def read_file(filename):
+
+    print("\n⭐️ def: read_file")
+
+    # Iterate on the dataset, in chunks
+
+    chunk_id = 0
+    row_count = 0
+    cleaned_row_count = 0
+    source_name = filename
+    base_filename = os.path.basename(filename).split('.')[0]
+    destination_name = os.path.join(params.LOCAL_DATA_PATH,"processed",f'{base_filename}.csv')
+
+    while (True):
+        print(Fore.BLUE + f"\nProcessing chunk n°{chunk_id}..." + Style.RESET_ALL)
+
+        data_chunk = get_chunk(
+            source_name = source_name,
+            index=chunk_id * params.CHUNK_SIZE,
+            chunk_size = params.CHUNK_SIZE
+        )
+
+        # Break out of while loop if data is none
+        if data_chunk is None:
+            print(Fore.BLUE + "\nNo data in latest chunk..." + Style.RESET_ALL)
+            break
+
+        row_count += data_chunk.shape[0]
+
+        #data_chunk_cleaned = clean_data(data_chunk)
+        #cleaned_row_count += len(data_chunk_cleaned)
+
+        # Break out of while loop if cleaning removed all rows
+        #if len(data_chunk_cleaned) == 0:
+        #    print(Fore.BLUE + "\nNo cleaned data in latest chunk..." + Style.RESET_ALL)
+        #    break
+
+        #X_chunk = data_chunk_cleaned.drop("fare_amount", axis=1)
+        #y_chunk = data_chunk_cleaned[["fare_amount"]]
+
+        #Need to replace this with Labels 1,2,3,4,5,6?
+        y_chunk = data_chunk[['Class_label']]
+        X_chunk = data_chunk
+        X_processed_chunk = preprocess_main(X_chunk)
+
+        data_processed_chunk = pd.DataFrame(
+            np.concatenate((X_processed_chunk, y_chunk), axis=1)
+        )
+
+        # Save and append the chunk
+        is_first = chunk_id == 0
+
+        save_chunk(
+            destination_name=destination_name,
+            is_first=is_first,
+            data=data_processed_chunk
+        )
+
+        chunk_id += 1
+
+    if row_count == 0:
+        print("\n✅ No new data for the preprocessing 👌")
+        return None
+
+    print(f"\n✅ Data processed saved entirely: {row_count} rows ({cleaned_row_count} cleaned)")
+
+    return None
+
+def pre_load_data(mode, path=None, endswith=None):
+    """
+    Reads the raw data files.
+
+    args:
+
+    endswith - The wildcard can be used to pre-load on specific participant data
+    path - overwrite the default path from the env file
+
+    """
+
+    valid_modes=params.validator.get('PRELOAD_MODE')
+
+    if mode not in valid_modes:
+        raise NameError(f"Invalid mode for {mode} must be in {valid_modes}")
+
+    #the mode will be processed or raw
     if path is None:
-        data_dir=os.path.join('..','data','external','UT_Smoking_Data')
+        data_dir=os.path.join(params.LOCAL_DATA_PATH,mode)
 
     if endswith is None:
         endswith='Participant1_Data.xlsx'
@@ -46,12 +161,37 @@ def read_from_local_file(path=None, endswith=None) -> pd.DataFrame:
     for file in os.listdir(data_dir):
         if file.endswith(endswith):
             filename=os.path.join(data_dir,file)
-            participant_num = re.findall(r'\d+',file)
+            read_file(filename)
+
+def read_from_local_file(path=None, endswith=None) -> pd.DataFrame:
+    """ work-in-progress for loading data files at the moment if you call
+    without specifying parameters then it will load Participant1_Data.xlsx
+    """
+
+    def read_excel(list) -> pd.DataFrame:
+
+        for f in list:
             data=pd.read_excel(filename, header=None)
+            basename=os.path.basename(f)
+            participant_num = ''.join([ d for d in re.findall(r'\d+',basename)])
             data['Participant_Num']=participant_num
 
-    return(data)
+        return(data)
 
+    if path is None:
+        data_dir=os.path.join('..','data','external','UT_Smoking_Data')
+
+    if endswith is None:
+        endswith='Participant1_Data.xlsx'
+
+    allfiles=[]
+    #loop through files in the data_dir
+    for file in os.listdir(data_dir):
+        if file.endswith(endswith):
+            filename=os.path.join(data_dir,file)
+            allfiles.append(filename)
+
+    return(pd.concat(map(read_excel,allfiles)))
 
 def rename_columns(data: pd.DataFrame) -> pd.DataFrame:
     """ renaming the column names of our data set 0,1,2,3,4 to actual names
@@ -77,7 +217,7 @@ def rename_columns(data: pd.DataFrame) -> pd.DataFrame:
                     ,16:'timestamp_PD'
                     ,17:'Accelerometer_x_PD'
                     ,18:'Accelerometer_y_PD'
-                    ,19:'Accelerometer_z_PD'
+                    ,19:'Accelerom  eter_z_PD'
                     ,20:'Linear_acceleration_sensor_x_PD'
                     ,21:'Linear_acceleration_sensor_y_PD'
                     ,22:'Linear_acceleration_sensor_z_PD'

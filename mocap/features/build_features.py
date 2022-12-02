@@ -1,7 +1,5 @@
-import pandas as pd
-
-
 def rename_features(df):
+
     d = {0:'timestamp_WD',
      1:'Accelerometer_x_WD', 2:'Accelerometer_y_WD', 3:'Accelerometer_z_WD',
      4:'Linear_acceleration_sensor_x_WD', 5:'Linear_acceleration_sensor_y_WD', 6:'Linear_acceleration_sensor_z_WD',
@@ -24,4 +22,12 @@ def rename_features(df):
 
 def select_basic_class(df):
     df = df[df['Class_label'].isin(['SmokeSD', 'SmokeST', 'Sit', 'Stand'])]
+    return df
+
+def preprocess_main(df):
+    """
+    wrapper to make the current code work, any pre-processing activities can then
+    be added to this wrapper once they are working.
+    """
+
     return df
