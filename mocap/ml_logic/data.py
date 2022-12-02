@@ -162,7 +162,7 @@ def load_pickles(path=None, startswith=None) -> pd.DataFrame:
 
         #data.rename(columns=column_names,inplace=True)
         df=pd.read_pickle(files)
-        df.rename(columns=params.COLUMN_NAMES_PROCESSED)
+        df.rename(columns=params.COLUMN_NAMES_PROCESSED,inplace=True)
 
         return(df)
 
