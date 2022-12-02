@@ -1,4 +1,4 @@
-.*
+/.*
 !.env_sample
 !.envrc_sample
 !/.gitignore
@@ -6,6 +6,7 @@
 *.pyc
 **/__pycache__/
 *.rar
+*.pkl
 *.csv
 *.zip
 *.tar

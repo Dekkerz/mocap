@@ -1,15 +1,21 @@
 import os
 
-CHUNK_SIZE = int(os.environ.get("CHUNK_SIZE"))
 LOCAL_DATA_PATH = os.path.expanduser(os.environ.get("LOCAL_DATA_PATH"))
-FILE_ENDS_WITH = os.path.expanduser(os.environ.get("FILE_ENDS_WITH"))
 LOCAL_REGISTRY_PATH = os.path.expanduser(os.environ.get("LOCAL_REGISTRY_PATH"))
-VALIDATION_DATASET_SIZE = int(os.environ.get("VALIDATION_DATASET_SIZE"))
-HEADERS=bool(os.environ.get("HEADERS"))
+CHUNK_SIZE=int(os.environ.get("CHUNK_SIZE"))
+UNPROCESSED_DATA='raw'
+PROCESSED_DATA='processed'
+DATA_SOURCE=os.environ.get("DATA_SOURCE")
 
-validator = dict(
-    PRELOAD_MODE=['raw','processed']
-)
+#Mapping for Label Encoding of Class (Smoke Stand etc)
+CLASS_ENCODING = {'SmokeSD':0
+                ,'SmokeST':1
+                ,'Eat':2
+                ,'DrinkSD':3
+                ,'DrinkST':4
+                ,'Sit':5
+                ,'Stand':6
+                }
 
 # Use this to optimize loading of raw_data without headers: pd.read_csv(..., dtypes=..., headers=False)
 DTYPES_RAW_OPTIMIZED_HEADLESS = {0:'object'
@@ -79,13 +85,32 @@ COLUMN_NAMES_RAW = ['timestamp_WD'
                     ,'GPS_long_PD'
                     ,'Class_label']
 
+COLUMN_NAMES_PROCESSED = {0:'Accelerometer_x_WD'
+                    ,1:'Accelerometer_y_WD'
+                    ,2:'Accelerometer_z_WD'
+                    ,3:'Linear_acceleration_sensor_x_WD'
+                    ,4:'Linear_acceleration_sensor_y_WD'
+                    ,5:'Linear_acceleration_sensor_z_WD'
+                    ,6:'Gyroscope_x_WD'
+                    ,7:'Gyroscope_y_WD'
+                    ,8:'Gyroscope_z_WD'
+                    ,9:'Magnetometer_x_WD'
+                    ,10:'Magnetometer_y_WD'
+                    ,11:'Magnetometer_z_WD'
+                    ,12:'Pressure_sensor_WD'
+                    ,13:'Heart_rate_sensor_WD'
+                    ,14:'Participant_Num'
+                    ,15:'Class_Encoded'
+                    ,16:'Class'
+                    }
+
 #PROJECT = os.environ.get("PROJECT")
 #DATASET = os.environ.get("DATASET")
 
 env_valid_options = dict(
-     DATA_SOURCE=["local", "big query"]
-    ,MODEL_TARGET=["local", "gcs", "mlflow"]
-    ,PREFECT_BACKEND=["development", "production"]
+     DATA_SOURCE=['local','big query']
+    ,MODEL_TARGET=['local','gcs','mlflow']
+    ,PREFECT_BACKEND=['development','production']
 )
 
 def validate_env_value(env, valid_options):
