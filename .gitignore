@@ -1,6 +1,6 @@
-.env
-.envrc
-.DS_STORE
+.*
+!.env_sample
+!.envrc_sample
 !/.gitignore
 *.egg-info
 *.pyc
@@ -18,6 +18,3 @@
 *.mat
 *.ipynb
 notebooks/*.ipynb
-.ipynb_checkpoints
-*/.ipynb_checkpoints/*
-/notebooks/UT_Smoking_Data*
