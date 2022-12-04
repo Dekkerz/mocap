@@ -12,7 +12,7 @@ def save_local_chunk(path: str,
 
     if not is_first:
         df=pd.read_pickle(path)
-        data.append(df)
+        data=pd.concat([df,data])
 
     print(Fore.BLUE + f"\nSave data to {path}:" + Style.RESET_ALL)
     data.to_pickle(path)
@@ -57,6 +57,8 @@ def get_pandas_chunk(path: str,
                 assert dict(df.dtypes) == dtypes
 
             if columns is not None:
+                print(df.columns)
+                print(columns)
                 df.columns = columns
 
     except pd.errors.EmptyDataError:

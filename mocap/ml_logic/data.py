@@ -81,6 +81,7 @@ def read_file(filename):
     source_name = filename
     base_filename = os.path.basename(filename).split('.')[0]
     destination_name = os.path.join(params.LOCAL_DATA_PATH,"processed",base_filename)
+    min_timestamp=None
 
     while (True):
         print(Fore.BLUE + f"\nProcessing chunk n°{chunk_id}..." + Style.RESET_ALL)
@@ -92,15 +93,19 @@ def read_file(filename):
         )
 
         # Break out of while loop if data is none
-        if data_chunk is None:
+        #if data_chunk.shape[0] > 0:
+        print(Fore.BLUE + f"\nRows returned from data_chunk:{row_count}" + Style.RESET_ALL)
+
+        #shape == None was not working replaced with 0 check
+        if data_chunk.shape[0] == 0:
             print(Fore.BLUE + "\nNo data in latest chunk..." + Style.RESET_ALL)
             break
 
         row_count += data_chunk.shape[0]
 
-        scrubbed_data_chunk = scrub_data(data_chunk,base_filename)
+        scrubbed_data_chunk = scrub_data(data_chunk,base_filename,min_timestamp)
         scrubbed_row_count += len(scrubbed_data_chunk)
-
+        min_timestamp = scrubbed_data_chunk.loc[scrubbed_data_chunk['Engineered_Timestamp'].idxmax()]
 
         # Break out of while loop if cleaning removed all rows
         if len(scrubbed_data_chunk) == 0:
@@ -154,7 +159,7 @@ def pre_load_data(path=None, endswith=None):
             filename=os.path.join(data_dir,file)
             read_file(filename)
 
-def load_pickles(path=None, startswith=None) -> pd.DataFrame:
+def load_pickles(path=None, endswith=None) -> pd.DataFrame:
     """ work-in-progress for loading data files at the moment if you call
     without specifying parameters then it will load Participant1_Data.xlsx
     """
@@ -170,13 +175,13 @@ def load_pickles(path=None, startswith=None) -> pd.DataFrame:
     if path is None:
         data_dir=os.path.join(params.LOCAL_DATA_PATH,params.PROCESSED_DATA)
 
-    if startswith is None:
-        startswith='Participant1_Data'
+    if endswith is None:
+        endswith='10_Data.pkl'
 
     files=[]
     #loop through files in the data_dir
     for file in os.listdir(data_dir):
-        if file.startswith(startswith):
+        if file.endswith(endswith):
             filename=os.path.join(data_dir,file)
             files.append(filename)
 

@@ -6,6 +6,7 @@ CHUNK_SIZE=int(os.environ.get("CHUNK_SIZE"))
 UNPROCESSED_DATA='raw'
 PROCESSED_DATA='processed'
 DATA_SOURCE=os.environ.get("DATA_SOURCE")
+FREQUENCY=50000
 
 #Mapping for Label Encoding of Class (Smoke Stand etc)
 CLASS_ENCODING = {'SmokeSD':0
@@ -100,8 +101,23 @@ COLUMN_NAMES_PROCESSED = {0:'Accelerometer_x_WD'
                     ,12:'Pressure_sensor_WD'
                     ,13:'Heart_rate_sensor_WD'
                     ,14:'Participant_Num'
+                    ,15:'Engineered_Timestamp'
                     ,15:'Class_Encoded'
-                    ,16:'Class'
+                    ,16:'Accelerometer_x_WD_MMS'
+                    ,17:'Accelerometer_y_WD_MMS'
+                    ,18:'Accelerometer_z_WD_MMS'
+                    ,19:'Linear_acceleration_sensor_x_WD_MMS'
+                    ,20:'Linear_acceleration_sensor_y_WD_MMS'
+                    ,21:'Linear_acceleration_sensor_z_WD_MMS'
+                    ,22:'Gyroscope_x_WD_MMS'
+                    ,23:'Gyroscope_y_WD_MMS'
+                    ,24:'Gyroscope_z_WD_MMS'
+                    ,25:'Magnetometer_x_WD_MMS'
+                    ,26:'Magnetometer_y_WD_MMS'
+                    ,27:'Magnetometer_z_WD_MMS'
+                    ,28:'Pressure_sensor_WD_MMS'
+                    ,29:'Heart_rate_sensor_WD_MMS'
+                    ,30:'Class'
                     }
 
 #PROJECT = os.environ.get("PROJECT")
