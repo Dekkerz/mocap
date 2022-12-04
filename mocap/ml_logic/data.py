@@ -107,7 +107,8 @@ def read_file(filename):
             print(Fore.BLUE + "\nNo cleaned data in latest chunk..." + Style.RESET_ALL)
             break
 
-        X_chunk = scrubbed_data_chunk.drop('Class_label', axis=1)
+        #X_chunk = scrubbed_data_chunk.drop('Class_label', axis=1)
+        X_chunk = scrubbed_data_chunk
         y_chunk = scrubbed_data_chunk[['Class_label']]
 
         #Need to replace this with Labels 1,2,3,4,5,6?

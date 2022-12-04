@@ -39,18 +39,25 @@ def get_pandas_chunk(path: str,
 
         df = pd.read_excel(
                 path,
-                skiprows=index + 1,  # skip header
+                skiprows=index,  # skip header
                 nrows=chunk_size,
                 dtype=dtypes,
                 header=None)  # read all rows
 
-        # read_excel(dtypes=...) will silently fail to convert data types, if column names do no match dictionnary key provided.
-        #if isinstance(dtypes, dict):
-        #    print(dict(df.dtypes))
-        #    assert dict(df.dtypes) == dtypes
+        #pd.read_excel doesn't seem to be raising the pd.errors handler, therefore adding a check based on the shape
+        no_of_rows_returned=df.shape[0]
 
-        if columns is not None:
-            df.columns = columns
+        if verbose:
+            print(Fore.MAGENTA + f"No, of rows returns({no_of_rows_returned})" + Style.RESET_ALL)
+
+        if no_of_rows_returned > 0:
+
+            # read_excel(dtypes=...) will silently fail to convert data types, if column names do no match dictionnary key provided.
+            if isinstance(dtypes, dict):
+                assert dict(df.dtypes) == dtypes
+
+            if columns is not None:
+                df.columns = columns
 
     except pd.errors.EmptyDataError:
 

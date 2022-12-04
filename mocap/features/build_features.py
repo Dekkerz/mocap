@@ -6,6 +6,7 @@ def label_encode_class(df: pd.DataFrame) -> pd.DataFrame:
 
     """
     df['Class_Encoded']=df['Class_label'].map(params.CLASS_ENCODING)
+    df.drop('Class_label', axis=1)
     return df
 
 def preprocess_main(df: pd.DataFrame) -> pd.DataFrame:
