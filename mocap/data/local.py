@@ -10,11 +10,16 @@ def save_local_chunk(path: str,
     """
     path=f'{path}.pkl'
 
+    #print(data.columns)
+
     if not is_first:
         df=pd.read_pickle(path)
         data=pd.concat([df,data])
+        print('first entry...')
 
     print(Fore.BLUE + f"\nSave data to {path}:" + Style.RESET_ALL)
+    print(f'writing pickle .. data types:{data.dtypes}')
+    print(f'writing pickle .. cols:{data.columns}')
     data.to_pickle(path)
 
 def get_pandas_chunk(path: str,
@@ -47,6 +52,9 @@ def get_pandas_chunk(path: str,
         #pd.read_excel doesn't seem to be raising the pd.errors handler, therefore adding a check based on the shape
         no_of_rows_returned=df.shape[0]
 
+        #print(f'The data types after fetching:{df.dtypes}')
+        #print(f'The column names after fetching:{df.columns}')
+
         if verbose:
             print(Fore.MAGENTA + f"No, of rows returns({no_of_rows_returned})" + Style.RESET_ALL)
 
@@ -57,12 +65,10 @@ def get_pandas_chunk(path: str,
                 assert dict(df.dtypes) == dtypes
 
             if columns is not None:
-                print(df.columns)
-                print(columns)
+                print(f'Do we get here?')
                 df.columns = columns
 
     except pd.errors.EmptyDataError:
-
         return None  # end of data
 
     return df

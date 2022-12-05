@@ -4,7 +4,7 @@ from colorama import Fore, Style
 import mocap.utils.params as params
 import datetime
 
-def engineered_timestamp(df: pd.DataFrame, min_timestamp: int = None) -> pd.DataFrame:
+def engineered_timestamp(df: pd.DataFrame, min_timestamp: datetime = None) -> pd.DataFrame:
     """
     Since the timestamp is incorrect we have to engineer a timestamp.
     The timestamp is incorrect because there are bugs with the logger where we see "leakage"
@@ -22,6 +22,7 @@ def engineered_timestamp(df: pd.DataFrame, min_timestamp: int = None) -> pd.Data
 
     if min_timestamp is None:
         min_timestamp=df[0:1]['timestamp_WD'][0]
+        engineered_timestamp=datetime.datetime.fromtimestamp(min_timestamp/1000)
 
     engineered_timestamp=min_timestamp
 
@@ -36,7 +37,7 @@ def engineered_timestamp(df: pd.DataFrame, min_timestamp: int = None) -> pd.Data
         #print(Fore.BLUE + f"\nindex_range:{start_index}:{end_index}" + Style.RESET_ALL)
 
         df_chunk=df.iloc[start_index:end_index]
-        df_chunk['Engineered_Timestamp']=datetime.datetime.fromtimestamp(engineered_timestamp/1000)
+        df_chunk['Engineered_Timestamp']=engineered_timestamp
 
         #print(Fore.BLUE + f"\nTimeStamp:{datetime.datetime.fromtimestamp(engineered_timestamp/1000)}" + Style.RESET_ALL)
 
@@ -62,12 +63,20 @@ def drop_redundant_cols(df: pd.DataFrame) -> pd.DataFrame:
     # remove useless/redundant columns
     #print(df.columns)
 
-    df = df.drop(columns=['timestamp_WD'
+    df.drop(columns=['timestamp_WD'
+                    ,'Gyroscope_x_WD'
+                    ,'Gyroscope_y_WD'
+                    ,'Gyroscope_z_WD'
+                    ,'Magnetometer_x_WD'
+                    ,'Magnetometer_y_WD'
+                    ,'Magnetometer_z_WD'
+                    ,'Pressure_sensor_WD'
+                    ,'Heart_rate_sensor_WD'
                     ,'GAP'
                     ,'timestamp_PD'
                     ,'Accelerometer_x_PD'
                     ,'Accelerometer_y_PD'
-                    ,'Accelerom  eter_z_PD'
+                    ,'Accelerometer_z_PD'
                     ,'Linear_acceleration_sensor_x_PD'
                     ,'Linear_acceleration_sensor_y_PD'
                     ,'Linear_acceleration_sensor_z_PD'
@@ -78,7 +87,7 @@ def drop_redundant_cols(df: pd.DataFrame) -> pd.DataFrame:
                     ,'Magnetometer_y_PD'
                     ,'Magnetometer_z_PD'
                     ,'GPS_lat_PD'
-                    ,'GPS_long_PD'])
+                    ,'GPS_long_PD'],inplace=True)
 
     return(df)
 
@@ -95,8 +104,11 @@ def scrub_data(df: pd.DataFrame, file: str = "",min_timestamp: int = None) -> pd
     """
     #df.drop_duplicates(inplace=True)
     df=add_participant_num(df,file)
+    #print(f'after adding participant:{df.columns}')
     df=engineered_timestamp(df,min_timestamp)
+    #print(f'after adding engineered time:{df.columns}')
     df=drop_redundant_cols(df)
+    #print(f'after dropping redundant columns:{df.columns}')
 
     print("\n✅ data cleaned")
 

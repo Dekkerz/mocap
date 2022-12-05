@@ -23,6 +23,9 @@ def save_chunk(destination_name: str,
     #
     #    return
 
+    print(f'before calling save_local_chunk')
+    print(f'dtypes:{data.dtypes}')
+
     save_local_chunk(path=destination_name,
                      data=data,
                      is_first=is_first,
@@ -84,6 +87,7 @@ def read_file(filename):
     min_timestamp=None
 
     while (True):
+
         print(Fore.BLUE + f"\nProcessing chunk n°{chunk_id}..." + Style.RESET_ALL)
 
         data_chunk = get_chunk(
@@ -105,8 +109,14 @@ def read_file(filename):
 
         scrubbed_data_chunk = scrub_data(data_chunk,base_filename,min_timestamp)
         scrubbed_row_count += len(scrubbed_data_chunk)
-        min_timestamp = scrubbed_data_chunk.loc[scrubbed_data_chunk['Engineered_Timestamp'].idxmax()]
 
+        #get the max timestamp from the processed chunk so we can use it
+        #as a starting point for the next chunk
+        min_timestamp = scrubbed_data_chunk['Engineered_Timestamp'].max()
+
+        print(Fore.BLUE + f"\nRows returned from data_chunk:{row_count}" + Style.RESET_ALL)
+
+        #print(min_timestamp)
         # Break out of while loop if cleaning removed all rows
         if len(scrubbed_data_chunk) == 0:
             print(Fore.BLUE + "\nNo cleaned data in latest chunk..." + Style.RESET_ALL)
@@ -186,3 +196,6 @@ def load_pickles(path=None, endswith=None) -> pd.DataFrame:
             files.append(filename)
 
     return(pd.concat(map(load_pickles,files)))
+
+if __name__ == '__main__':
+   pre_load_data(path=None, endswith='Data.xlsx')
