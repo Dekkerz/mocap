@@ -5,15 +5,16 @@ LOCAL_REGISTRY_PATH = os.path.expanduser(os.environ.get("LOCAL_REGISTRY_PATH"))
 CHUNK_SIZE=int(os.environ.get("CHUNK_SIZE"))
 UNPROCESSED_DATA='raw'
 PROCESSED_DATA='processed'
+EXTERNAL_DATA='external'
 DATA_SOURCE=os.environ.get("DATA_SOURCE")
 FREQUENCY=50
 
 #Mapping for Label Encoding of Class (Smoke Stand etc)
-CLASS_ENCODING = {'SmokeSD':0
-                ,'SmokeST':1
-                ,'Eat':2
-                ,'DrinkSD':3
-                ,'DrinkST':4
+CLASS_ENCODING = {'SmokeST':0
+                ,'SmokeSD':1 
+                ,'DrinkST':2
+                ,'DrinkSD':3 
+                ,'Eat':4
                 ,'Sit':5
                 ,'Stand':6
                 }

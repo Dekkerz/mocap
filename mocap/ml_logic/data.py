@@ -6,6 +6,7 @@ import mocap.utils.params as params
 from mocap.features.build_features import preprocess_main
 from mocap.ml_logic.preprocessing import scrub_data
 from mocap.data.local import get_pandas_chunk, save_local_chunk
+import json
 
 def save_chunk(destination_name: str,
                is_first: bool,
@@ -196,6 +197,35 @@ def load_pickles(path=None, endswith=None) -> pd.DataFrame:
             files.append(filename)
 
     return(pd.concat(map(load_pickles,files)))
+
+def read_json(path=None, endswith=None) -> pd.DataFrame:
+
+    if path is None:
+        data_dir=os.path.join(params.LOCAL_DATA_PATH,params.EXTERNAL_DATA)
+
+    if endswith is None:
+        endswith='.json'
+
+    #loop through files in the data_dir
+    for file in os.listdir(data_dir):
+        if file.endswith(endswith):
+            filename=os.path.join(data_dir,file)
+            print(filename)
+
+            # Opening JSON file
+            f = open(filename)
+            
+            # returns JSON object as
+            # a dictionary
+            data = json.load(f)
+
+            # Iterating through the json
+            # list
+            for i in data['emp_details']:
+                print(i)
+
+            # Closing file
+            f.close()
 
 if __name__ == '__main__':
    pre_load_data(path=None, endswith='Data.xlsx')

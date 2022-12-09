@@ -3,6 +3,7 @@
 !.envrc_sample
 !/.gitignore
 *.egg-info
+*.DS_Store
 *.pyc
 **/__pycache__/
 *.rar
