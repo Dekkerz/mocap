@@ -1,12 +1,13 @@
 /.*
 !.env_sample
 !.envrc_sample
-!/.gitignore
+!.gitignore
 *.egg-info
 *.DS_Store
 *.pyc
 **/__pycache__/
 *.rar
+*.json
 *.pkl
 *.csv
 *.zip
@@ -20,3 +21,4 @@
 *.mat
 *.ipynb
 notebooks/*.ipynb
+.ipynb_checkpoints
